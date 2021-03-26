@@ -1,0 +1,12 @@
+node_modules/
+core/temp/
+.idea/
+.vscode/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+yarn-error.log
+yarn.lock
