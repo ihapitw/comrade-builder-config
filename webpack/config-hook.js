@@ -164,7 +164,9 @@ module.exports = function (userConfig, MODE, __rootPath) {
               options: {
                 name: '[name].[ext]',
                 outputPath: '',
-                publicPath: '/'
+                publicPath(path) {
+                  return path.replace(/\//g, '')
+                }
               }
             }
           ]
