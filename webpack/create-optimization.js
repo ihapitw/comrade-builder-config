@@ -18,10 +18,8 @@ const cacheGroups = (__base) => {
         name: base,
         filename: 'assets/js/core/[name].js',
         test: (m) => {
-          return (
-            m.constructor.name === 'CssModule' &&
-            m.context.match(`components/${base}`)
-          )
+          const reg = new RegExp(`components/${base}$`)
+          return m.constructor.name === 'CssModule' && m.context.match(reg)
         },
         chunks: 'all',
         enforce: true
