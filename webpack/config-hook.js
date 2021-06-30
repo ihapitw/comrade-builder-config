@@ -7,6 +7,8 @@ const createOptimization = require('./create-optimization')
 const createIconFont = require('./create-icon-font')
 const entryMessage = require('./entry-message')
 
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const BeautifyHtmlWebpackPlugin = require('beautify-html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackNotifierPlugin = require('webpack-notifier')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -20,6 +22,12 @@ module.exports = function (userConfig, MODE, __rootPath) {
     target: MODE === 'development' ? 'web' : 'browserslist',
     devtool: 'source-map',
     mode: MODE,
+    resolve: {
+      extensions: ['.js', '.vue', '.json'],
+      alias: {
+        vue$: 'vue/dist/vue.esm.js'
+      }
+    },
     stats: {
       all: false,
       errors: true,
@@ -84,9 +92,26 @@ module.exports = function (userConfig, MODE, __rootPath) {
               cache: true
             },
             noErrorOnMissing: true
+          },
+          {
+            from: 'src/assets/json/*.json',
+            to: 'json/[name][ext]',
+            transform: {
+              cache: true
+            },
+            noErrorOnMissing: true
+          },
+          {
+            from: 'src/assets/misc/*.*',
+            to: 'json/[name][ext]',
+            transform: {
+              cache: true
+            },
+            noErrorOnMissing: true
           }
         ]
       }),
+      new VueLoaderPlugin(),
       ...createPages(MODE, __rootPath),
       new webpack.DefinePlugin({
         NODE_ENV: JSON.stringify(MODE),
@@ -96,6 +121,11 @@ module.exports = function (userConfig, MODE, __rootPath) {
     optimization: createOptimization(MODE, __rootPath),
     module: {
       rules: [
+        {
+          test: /\.vue$/,
+          include: path.resolve(__dirname, 'src'),
+          use: ['vue-loader']
+        },
         {
           test: /\.js$/,
           exclude: /(node_modules)/,
@@ -162,7 +192,7 @@ module.exports = function (userConfig, MODE, __rootPath) {
             {
               loader: 'file-loader',
               options: {
-                name: '[name].[ext]',
+                name: '[name].[ext]?ver=[contenthash]',
                 outputPath: '',
                 publicPath(path) {
                   return path.replace(/\//g, '')
@@ -175,6 +205,14 @@ module.exports = function (userConfig, MODE, __rootPath) {
     }
   }
   if (MODE === 'production') {
+    
+    config.plugins.push(
+      new BeautifyHtmlWebpackPlugin({
+        indent_size: 2,
+        indent_char: ' '
+      })
+    )
+  
     config.plugins.push({
       apply: (compiler) => {
         compiler.hooks.done.tap('DonePlugin', () => {
