@@ -7,7 +7,7 @@ const createOptimization = require('./create-optimization')
 const createIconFont = require('./create-icon-font')
 const entryMessage = require('./entry-message')
 
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const BeautifyHtmlWebpackPlugin = require('beautify-html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackNotifierPlugin = require('webpack-notifier')
@@ -123,7 +123,7 @@ module.exports = function (userConfig, MODE, __rootPath) {
       rules: [
         {
           test: /\.vue$/,
-          include: path.resolve(__dirname, 'src'),
+          include: path.resolve(__rootPath, './src/'),
           use: ['vue-loader']
         },
         {
@@ -205,14 +205,13 @@ module.exports = function (userConfig, MODE, __rootPath) {
     }
   }
   if (MODE === 'production') {
-    
     config.plugins.push(
       new BeautifyHtmlWebpackPlugin({
         indent_size: 2,
         indent_char: ' '
       })
     )
-  
+
     config.plugins.push({
       apply: (compiler) => {
         compiler.hooks.done.tap('DonePlugin', () => {

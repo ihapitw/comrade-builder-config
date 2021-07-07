@@ -32,12 +32,12 @@ const cacheGroups = (__base) => {
 module.exports = function (env, __base) {
   if (env === 'development') {
     return {
-      runtimeChunk: 'single'
+      runtimeChunk: false
     }
   }
   if (env === 'production') {
     return {
-      runtimeChunk: 'single',
+      runtimeChunk: false,
       splitChunks: {
         cacheGroups: cacheGroups(__base)
       },
